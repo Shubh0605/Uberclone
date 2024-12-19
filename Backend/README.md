@@ -301,3 +301,128 @@ curl -X GET http://localhost:3000/users/logout \
   "message": "Logged out successfully"
 }
 ```
+
+# Captain Registration API Documentation
+
+## Register Captain Endpoint
+
+### `POST /captains/register`
+
+Registers a new captain in the system.
+
+### Request Body
+
+```json
+{
+  "fullname": {
+    "firstname": "string",
+    "lastname": "string"
+  },
+  "email": "string",
+  "password": "string",
+  "vehicle": {
+    "color": "string",
+    "plate": "string",
+    "capacity": "number",
+    "vehicleType": "string"
+  }
+}
+```
+
+### Required Fields
+
+- `fullname.firstname`: Captain's first name (minimum 3 characters)
+- `email`: Valid email address
+- `password`: Password (minimum 6 characters)
+- `vehicle.color`: Vehicle color (minimum 3 characters)
+- `vehicle.plate`: Vehicle plate number (minimum 3 characters)
+- `vehicle.capacity`: Vehicle passenger capacity (numeric)
+- `vehicle.vehicleType`: Type of vehicle (must be 'car', 'motorcycle', or 'auto')
+
+### Response
+
+#### Success Response
+
+**Code**: 201 CREATED
+
+```json
+{
+  "success": true,
+  "message": "Captain registered successfully",
+  "captain": {
+    "id": "string",
+    "fullname": {
+      "firstname": "string",
+      "lastname": "string"
+    },
+    "email": "string",
+    "vehicle": {
+      "color": "string",
+      "plate": "string",
+      "capacity": "number",
+      "vehicleType": "string"
+    }
+  }
+}
+```
+
+#### Error Responses
+
+**Code**: 400 BAD REQUEST
+- When required fields are missing or invalid
+
+```json
+{
+  "errors": [
+    {
+      "msg": "First name must be at least 3 characters long",
+      "param": "fullname.firstname",
+      "location": "body"
+    }
+  ]
+}
+```
+
+### Example
+
+#### Example Request
+```bash
+curl -X POST http://localhost:3000/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "password": "password123",
+    "vehicle": {
+      "color": "black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }'
+```
+
+#### Example Success Response
+```json
+{
+  "success": true,
+  "message": "Captain registered successfully",
+  "captain": {
+    "id": "64f5a2b7c83f1234567890",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "vehicle": {
+      "color": "black",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
+  }
+}
+```
