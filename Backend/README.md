@@ -251,7 +251,7 @@ curl -X GET http://localhost:3000/users/profile \
   "lastname": "Doe",
   "email": "john@example.com"
 }
-```
+
 
 ## Logout User Endpoint
 
@@ -302,127 +302,170 @@ curl -X GET http://localhost:3000/users/logout \
 }
 ```
 
-# Captain Registration API Documentation
+# Captain API Documentation
 
-## Register Captain Endpoint
+## Register Captain
 
-### `POST /captains/register`
+`POST /captain/register`
 
-Registers a new captain in the system.
+Register a new captain in the system.
 
 ### Request Body
-
 ```json
 {
-  "fullname": {
-    "firstname": "string",
-    "lastname": "string"
-  },
-  "email": "string",
-  "password": "string",
-  "vehicle": {
-    "color": "string",
-    "plate": "string",
-    "capacity": "number",
-    "vehicleType": "string"
-  }
+    "fullname": {
+        "firstname": "John", // minimum 3 characters
+        "lastname": "Doe"    // optional
+    },
+    "email": "john@example.com", // must be valid email format
+    "password": "password123",   // minimum 6 characters
+    "vehicle": {
+        "color": "black",       // minimum 3 characters
+        "plate": "ABC123",      // minimum 3 characters
+        "capacity": 4,          // must be integer >= 1
+        "vehicleType": "car"    // must be one of: "car", "motorcycle", "auto"
+    }
 }
 ```
 
-### Required Fields
-
-- `fullname.firstname`: Captain's first name (minimum 3 characters)
-- `email`: Valid email address
-- `password`: Password (minimum 6 characters)
-- `vehicle.color`: Vehicle color (minimum 3 characters)
-- `vehicle.plate`: Vehicle plate number (minimum 3 characters)
-- `vehicle.capacity`: Vehicle passenger capacity (numeric)
-- `vehicle.vehicleType`: Type of vehicle (must be 'car', 'motorcycle', or 'auto')
-
-### Response
-
-#### Success Response
-
-**Code**: 201 CREATED
-
+### Success Response (201 Created)
 ```json
 {
-  "success": true,
-  "message": "Captain registered successfully",
-  "captain": {
-    "id": "string",
-    "fullname": {
-      "firstname": "string",
-      "lastname": "string"
-    },
-    "email": "string",
-    "vehicle": {
-      "color": "string",
-      "plate": "string",
-      "capacity": "number",
-      "vehicleType": "string"
+    "token": "eyJhbGciOiJIUzI1...", // JWT auth token
+    "captain": {
+        "_id": "507f1f77bcf86cd799439011",
+        "fullname": {
+            "firstname": "John",
+            "lastname": "Doe"
+        },
+        "email": "john@example.com",
+        "vehicle": {
+            "color": "black",
+            "plate": "ABC123",
+            "capacity": 4,
+            "vehicleType": "car"
+        },
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z"
     }
-  }
 }
 ```
 
-#### Error Responses
+## Login Captain
 
-**Code**: 400 BAD REQUEST
-- When required fields are missing or invalid
+`POST /captain/login`
 
+Authenticate a captain and get access token.
+
+### Request Body
 ```json
 {
-  "errors": [
-    {
-      "msg": "First name must be at least 3 characters long",
-      "param": "fullname.firstname",
-      "location": "body"
-    }
-  ]
+    "email": "john@example.com", // must be valid email format
+    "password": "password123"    // minimum 6 characters
 }
 ```
 
-### Example
-
-#### Example Request
-```bash
-curl -X POST http://localhost:3000/captains/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
-    },
-    "email": "john@example.com",
-    "password": "password123",
-    "vehicle": {
-      "color": "black",
-      "plate": "ABC123",
-      "capacity": 4,
-      "vehicleType": "car"
-    }
-  }'
-```
-
-#### Example Success Response
+### Success Response (200 OK)
 ```json
 {
-  "success": true,
-  "message": "Captain registered successfully",
-  "captain": {
-    "id": "64f5a2b7c83f1234567890",
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
-    },
-    "email": "john@example.com",
-    "vehicle": {
-      "color": "black",
-      "plate": "ABC123",
-      "capacity": 4,
-      "vehicleType": "car"
+    "token": "eyJhbGciOiJIUzI1...", // JWT auth token
+    "captain": {
+        "_id": "507f1f77bcf86cd799439011",
+        "fullname": {
+            "firstname": "John",
+            "lastname": "Doe"
+        },
+        "email": "john@example.com",
+        "vehicle": {
+            "color": "black",
+            "plate": "ABC123",
+            "capacity": 4,
+            "vehicleType": "car"
+        }
     }
-  }
+}
+```
+
+## Get Captain Profile
+
+`GET /captain/profile`
+
+Get the authenticated captain's profile.
+
+### Headers
+```json
+{
+    "Authorization": "Bearer eyJhbGciOiJIUzI1..." // JWT token required
+}
+```
+
+### Success Response (200 OK)
+```json
+{
+    "captain": {
+        "_id": "507f1f77bcf86cd799439011",
+        "fullname": {
+            "firstname": "John",
+            "lastname": "Doe"
+        },
+        "email": "john@example.com",
+        "vehicle": {
+            "color": "black",
+            "plate": "ABC123",
+            "capacity": 4,
+            "vehicleType": "car"
+        },
+        "createdAt": "2023-01-01T00:00:00.000Z",
+        "updatedAt": "2023-01-01T00:00:00.000Z"
+    }
+}
+```
+
+## Logout Captain
+
+`GET /captain/logout`
+
+Logout the current captain and invalidate token.
+
+### Headers
+```json
+{
+    "Authorization": "Bearer eyJhbGciOiJIUzI1..." // JWT token required
+}
+```
+
+### Success Response (200 OK)
+```json
+{
+    "message": "Logout successfully"
+}
+```
+
+### Common Error Responses
+
+#### Validation Error (400 Bad Request)
+```json
+{
+    "errors": [
+        {
+            "msg": "First name must be at least 3 characters long",
+            "param": "fullname.firstname",
+            "location": "body"
+        }
+    ]
+}
+```
+
+#### Authentication Error (401 Unauthorized)
+```json
+{
+    "message": "Invalid email or password"
+}
+```
+
+#### Already Exists Error (400 Bad Request)
+```json
+{
+    "message": "Captain already exist"
 }
 ```
