@@ -19,9 +19,11 @@ router.post('/register', [
 
 
 router.post('/login', [
-    body('email').isEmail().withMessage('Please enter a valid email'),
-    body('password').notEmpty().withMessage('Password is required'),
-], captainController.loginCaptain)
+    body('email').isEmail().withMessage('Invalid Email'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+],
+    captainController.loginCaptain
+)
 
 
 router.get('/profile', authMiddleware.authCaptain, captainController.getCaptainProfile)
